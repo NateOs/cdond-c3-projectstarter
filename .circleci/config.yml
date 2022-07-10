@@ -51,7 +51,7 @@ jobs:
             npm install
             npm run build
       - slack/notify:
-          channel: https://alx-nd-c1.slack.com/archives/C03BV02DBAQ
+          channel: 
           event: fail
           template: basic_fail_1
       - save_cache:
@@ -72,7 +72,7 @@ jobs:
             npm install
             npm run build
       - slack/notify:
-          channel: https://alx-nd-c1.slack.com/archives/C03BV02DBAQ
+          channel: 
           event: fail
           template: basic_fail_1
       - save_cache:
