@@ -15,7 +15,7 @@ async function bootstrap() {
   logger.info(`NodeJs Version ${process.version}`);
   logger.info(JSON.stringify(process.env));
   const server = express();
-  const ap = await NestFactory.create(AppModule, new ExpressAdapter(server), {
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
     logger,
   });
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
