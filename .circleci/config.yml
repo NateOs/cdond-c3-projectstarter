@@ -131,6 +131,19 @@ jobs:
             cd backend
             npm install
             npm audit fix --force
+  deploy-infrastructure:
+    docker:
+      - image: cimg/aws:2022.6.1
+    steps:
+      - checkout
+      - run:
+          name: Ensure backend infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags project=udapeople \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
  
      
 workflows:
