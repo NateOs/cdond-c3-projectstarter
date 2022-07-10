@@ -51,7 +51,7 @@ jobs:
             npm install
             npm run build
       - slack/notify:
-          channel:
+          channel: ${SLACK_DEFAULT_CHANNEL}
           event: fail
           template: basic_fail_1
       - save_cache:
@@ -72,7 +72,7 @@ jobs:
             npm install
             npm run build
       - slack/notify:
-          channel:
+          channel: ${SLACK_DEFAULT_CHANNEL}
           event: fail
           template: basic_fail_1
       - save_cache:
