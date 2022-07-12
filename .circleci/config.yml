@@ -179,10 +179,6 @@ jobs:
       - image: python:3.10-alpine3.16
     steps:
       - checkout
-      - run:
-          name: Install tar utility
-          command: |
-            yum install -y tar gzip
       - add_ssh_keys:
           fingerprints: ["c7:eb:b2:c2:74:5d:25:fe:8c:87:70:52:00:9c:22:85"]
       - attach_workspace:
@@ -191,7 +187,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
-            ansible --version
+            apk add --update --no-cache tar gzip nodejs npm aws-cli curl
       - run:
           name: Configure server
           command: |
