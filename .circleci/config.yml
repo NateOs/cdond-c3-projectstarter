@@ -176,7 +176,7 @@ jobs:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
   configure-infrastructure:
     docker: 
-      - image: python:3.9.0-alpine
+      - image: python:3.10-alpine3.16
     steps:
       - checkout
       - run:
@@ -196,6 +196,8 @@ jobs:
           name: Configure server
           command: |
             ansible-playbook -i inventory.txt configure-server.yml
+      - destroy-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
      
 workflows:
   default:
