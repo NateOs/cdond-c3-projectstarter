@@ -198,6 +198,7 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
+          when: on_fail
      
 workflows:
   default:
@@ -214,5 +215,8 @@ workflows:
           requires: [build-frontend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
