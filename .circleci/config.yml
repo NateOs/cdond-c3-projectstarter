@@ -168,13 +168,13 @@ jobs:
             aws ec2 describe-instances  \
                 --query 'Reservations[*].Instances[*].PublicIPAddress' \
                 --filter "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-                --output text >> /inventory.txt
+                --output text >> ~/project/.circleci/ansible/inventory.txt
                 pwd
-                cat ~
+                cat ~/project/.circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
+            - project/.circleci/ansible/inventory.txt
       - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
   configure-infrastructure:
