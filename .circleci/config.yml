@@ -197,7 +197,7 @@ jobs:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:12.16
     steps:
       - checkout
       - restore_cache:
