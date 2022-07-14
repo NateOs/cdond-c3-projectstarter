@@ -220,7 +220,8 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-              curl https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d -k '1'
+              echo "Migration completed successfully!"
+              curl https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1' --insecure
             else echo "db migration failed"
             fi
       - destroy-environment:
