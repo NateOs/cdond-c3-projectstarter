@@ -197,7 +197,7 @@ jobs:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
   run-migrations:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -205,10 +205,6 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            sudo apt update
-            sudo apt install nodejs
-            cat node -v
-
             cd backend
             npm install
             npm run migrations > migrations_dump.txt
@@ -221,8 +217,8 @@ jobs:
               curl https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             else echo "db migration failed"
             fi
-      - destroy-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      # - destroy-environment:
+      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 workflows:
   default:
