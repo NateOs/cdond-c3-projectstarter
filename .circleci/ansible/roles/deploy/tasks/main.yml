@@ -1,43 +1,28 @@
 ---
-  - name: "update apt packages."
-    become: true
-    apt:
-      update_cache: yes
+  - name: "show remote environment"
+    shell: env
 
-  - name: "upgrade packages"
-    become: true
-    apt:
-      upgrade: yes
+  - name: "copy backend binaries"
+    become: yes
+    synchronize:
+      src: ../../backend/dist
+      dest: /home/ubuntu/uda_app
+      recursive: true
 
+  - name: "copy node_modules"
+    become: yes
+    synchronize:
+      src: ../../backend/node_modules
+      dest: /home/ubuntu/uda_app
+      recursive: true
 
-  - name: remove dependencies that are no longer required
+  - name: "delete anything that might already be running"
     become: true
-    apt:
-      autoremove: yes
+    command: pm2 delete all
+    ignore_errors: true
 
-  - name: "install dependencies."
+  - name: "start server"
     become: true
-    apt:
-      name: ["nodejs", "npm"]
-      state: latest
-      update_cache: yes
-
-  - name: "install pm2"
-    become: true
-    npm:
-      name: pm2
-      global: yes
-      production: yes
-      state: present
-
-  - name: Extract files 
-    become: true
-    unarchive:
-      src: files/artifact.tar.gz
-      dest: .
-
-  - name: Executing node
-    become: true
-    shell: |
-      pm2 stop all
-      pm2 start npm -- start
+    command: pm2 start -f ./main.js
+    args:
+      chdir: /home/ubuntu/uda_app/dist
