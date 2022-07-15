@@ -259,13 +259,15 @@ jobs:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
   deploy-backend:
     docker:
-      - image: python:3.10-alpine3.16
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["c7:eb:b2:c2:74:5d:25:fe:8c:87:70:52:00:9c:22:85"]
+          fingerprints: ["cb:a4:a2:c3:ae:5e:be:7a:bb:5d:bd:ba:74:bf:2f:94"] 
+      
       - attach_workspace:
           at: .
+
       - run:
           name: Install dependencies
           working_directory: /tmp
@@ -284,14 +286,16 @@ jobs:
             cat ./.circleci/ansible/inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i ./.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml --ssh-common-args='-o StrictHostKeyChecking=no'
-      - destroy-environment:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      - revert-migrations:
-          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+     
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:5}
+      - revert_migrations:
+          id: ${CIRCLE_WORKFLOW_ID:0:5}
   smoke-test:
     docker:
       - image: python:3.10-alpine3.16
     steps:
+      - checkout
       - run:
           name: Install dependencies
           command: |
@@ -311,18 +315,18 @@ jobs:
             else
               return 1
             fi
-      - run: 
-          name: Backend smoke test
-          command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project,Values=udapeople" --output text)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-            if curl "${API_URL}/api/status" | grep "ok"
-            then
-                return 0
-            else
-                return 1
-            fi
+      # - run: 
+      #     name: Backend smoke test
+      #     command: |
+      #       export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project,Values=udapeople" --output text)
+      #       export API_URL="http://${BACKEND_IP}:3030"
+      #       echo "${API_URL}"
+      #       if curl "${API_URL}/api/status" | grep "ok"
+      #       then
+      #           return 0
+      #       else
+      #           return 1
+      #       fi
       # - destroy-environment:
       #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
       # - revert-migrations:
