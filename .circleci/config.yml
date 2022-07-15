@@ -299,18 +299,6 @@ jobs:
             pip install awscli
             pip install nodejs
             pip install npm
-      - run: 
-          name: Backend smoke test
-          command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project,Values=udapeople-backend" --output text)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-            if curl "${API_URL}/api/status" | grep "ok"
-            then
-                return 0
-            else
-                return 1
-            fi
       - run:
           name: Frontend smoke test.
           command: |
@@ -322,6 +310,18 @@ jobs:
               return 1
             else
               return 1
+            fi
+      - run: 
+          name: Backend smoke test
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project,Values=udapeople-backend" --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+                return 0
+            else
+                return 1
             fi
       - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
