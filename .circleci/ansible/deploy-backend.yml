@@ -1,9 +1,13 @@
 ---
 
-- name: "configuration play." 
-  hosts: web
+- name: "deploy play." 
+  hosts: all
   user: ubuntu
+  become: true
+  become_method: sudo
+  become_user: root  
   gather_facts: false
+
   vars:
     - ansible_python_interpreter: /usr/bin/python3
     - ansible_host_key_checking: false
@@ -20,4 +24,4 @@
     TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
 
     roles:
-    - deploy
+      - deploy
