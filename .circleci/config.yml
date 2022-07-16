@@ -292,6 +292,7 @@ jobs:
             # tree -afC /root/project/.circleci -I *node_modules*
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            ls .circleci/ansible/roles/deploy/files
       - run:
           name: Deploy backend
           command: |
