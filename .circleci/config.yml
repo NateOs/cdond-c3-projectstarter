@@ -264,10 +264,8 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["cb:a4:a2:c3:ae:5e:be:7a:bb:5d:bd:ba:74:bf:2f:94"] 
-      
       - attach_workspace:
           at: .
-
       - run:
           name: Install dependencies
           working_directory: /tmp
@@ -278,15 +276,10 @@ jobs:
             aws --version
       - run:
           name: Deploy backend
+          working_directory: ./.circleci/ansible
           command: |
-            cd backend
-            npm i
-            npm run build
-            cd ..
-            cat ./.circleci/ansible/inventory.txt
-            export ANSIBLE_HOST_KEY_CHECKING=False
-            ansible-playbook -i ./.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml --ssh-common-args='-o StrictHostKeyChecking=no'
-     
+            cat inventory.txt
+            ansible-playbook -i inventory deploy-server.yaml
       - destroy-environment:
           id: ${CIRCLE_WORKFLOW_ID:0:5}
       - revert-migrations:
