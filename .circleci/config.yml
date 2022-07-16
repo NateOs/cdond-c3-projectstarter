@@ -308,10 +308,9 @@ jobs:
       - image: python:3.10-alpine3.16
     steps:
       - checkout
-      - run: wait 180 seconds
+      - run: 
           name: wait for server
-          command: |
-            sleep 180
+          command: sleep 180
       - run:
           name: Install dependencies
           working_directory: /tmp
