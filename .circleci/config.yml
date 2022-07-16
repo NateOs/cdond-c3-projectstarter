@@ -265,10 +265,9 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["c7:eb:b2:c2:74:5d:25:fe:8c:87:70:52:00:9c:22:85"] 
       - attach_workspace:
-          at: ~/
+          at: ~/tmp
       - run:
           name: Install dependencies
-          working_directory: /tmp
           command: |
             apk add --update ansible rsync openssh
             ansible --version
@@ -291,12 +290,12 @@ jobs:
             tar -C backend -czvf artifact.tar.gz .
             # tree -afC /root/project/.circleci -I *node_modules*
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            cp artifact.tar.gz  .circleci/ansible/roles/deploy/files/
             ls .circleci/ansible/roles/deploy/files
       - run:
           name: Deploy backend
           command: |
-            # your code here
+            
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
@@ -349,10 +348,10 @@ jobs:
             else
               return 1
             fi
-      # - destroy-environment:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      # - revert-migrations:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
 workflows:
   default:
     jobs:
