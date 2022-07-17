@@ -344,7 +344,7 @@ jobs:
       - checkout
       - run: 
           name: wait for server
-          command: sleep 180
+          command: sleep 90
       - run:
           name: Install dependencies
           working_directory: /tmp
@@ -361,7 +361,7 @@ jobs:
             if curl -s ${URL} | grep "Welcome"
             then
                 # Change this to 0 after the job fails
-              return 0
+              return 1
             else
               return 1
             fi
@@ -381,10 +381,10 @@ jobs:
             else
               return 1
             fi
-      # - destroy-environment:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      # - revert-migrations:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
 workflows:
   default:
     jobs:
