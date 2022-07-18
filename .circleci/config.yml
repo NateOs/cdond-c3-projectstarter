@@ -269,54 +269,6 @@ jobs:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
-  # deploy-backend:
-  #   docker:
-  #     - image: python:3.7-alpine3.11
-  #   steps:
-  #     - checkout
-  #     - add_ssh_keys:
-  #         fingerprints: ["c7:eb:b2:c2:74:5d:25:fe:8c:87:70:52:00:9c:22:85"] 
-  #     - attach_workspace:
-  #         at: ~/tmp
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           apk add --update ansible rsync openssh
-  #           ansible --version
-  #           pip install awscli
-  #           aws --version
-  #           cd backend
-  #           npm i
-  #           npm run build
-  #           rm -rf node_modules
-  #     - run:
-  #         name: Install NPM and NodeJS
-  #         command: |
-  #           apk add --update nodejs npm tar gzip curl
-  #     - run:
-  #         name: Create an Artifact
-  #         command: |
-  #           echo 'creating artifact'
-            
-  #           cd ..
-  #           # Zip the directory
-  #           tar -C backend -czvf artifact.tar.gz .
-  #           # tree -afC /root/project/.circleci -I *node_modules*
-  #           mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-  #           cp artifact.tar.gz  .circleci/ansible/roles/deploy/files/
-  #           ls .circleci/ansible/roles/deploy/files
-  #     - run:
-  #         name: Deploy backend
-  #         command: |
-            
-  #           cd .circleci/ansible
-  #           echo "Contents  of the inventory.txt file is -------"
-  #           cat inventory.txt
-  #           ansible-playbook -i inventory.txt deploy-backend.yml
-  #     - destroy-environment:
-  #         id: ${CIRCLE_WORKFLOW_ID:0:5}
-  #     - revert-migrations:
-  #         id: ${CIRCLE_WORKFLOW_ID:0:5}
   deploy-backend:
     docker:
       - image: python:3.10-alpine3.16
@@ -407,10 +359,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dependencies
-          command: |
-            # your code here
-      - run:
           name: Update cloudfront distribution
           command: |
             aws cloudformation deploy \
@@ -418,11 +366,35 @@ jobs:
             --stack-name InitialStack \
             --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
+
+            curl -k https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/udapeople -d "$OldWorkflowID"
       - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: 
+          name: Cleanup old stack(s) & s3
+          command: |
+            OldWorkflowID=$(curl --insecure https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/udapeople)
+            CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
+            if [[ "$CurrentWorkflowID" != "$OldWorkflowID" ]]
+            then 
+              echo "deleting old version"
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "*udapeople*"
+            else
+              echo "this stack is current, no previous"
+            fi
+      - destroy-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 workflows:
   default:
     jobs:
@@ -453,5 +425,7 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
 
           
