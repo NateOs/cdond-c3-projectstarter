@@ -33,7 +33,7 @@ commands:
           when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=$(curl --insecure https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            SUCCESS=$(curl --insecure https://kvdb.io/GhU1pwEADcAsznLuaxsast/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if(( $SUCCESS==1 )); 
             then
               cd ~/project/backend
@@ -224,10 +224,10 @@ jobs:
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
               echo "Migration completed successfully!"
-              curl -k https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'successful' 
+              curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'successful' 
             else
               echo "Migration failed!"
-              curl -k https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'failed' 
+              curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'failed' 
             return 1
             fi
       - destroy-environment:
@@ -365,13 +365,15 @@ jobs:
                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                     --no-paginate --output text)
 
+            echo "$OldWorkflowID:10:7"
+
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name InitialStack \
             --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
 
-            curl -k https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/udapeople -d "$OldWorkflowID"
+            curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople -d "$OldWorkflowID:10:7"
       - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
@@ -384,7 +386,7 @@ jobs:
       - run: 
           name: Cleanup old stack(s) & s3
           command: |
-            OldWorkflowID=$(curl --insecure https://kvdb.io/6ZhPnZHwYjAkzC8Uap8VuP/udapeople)
+            OldWorkflowID=$(curl --insecure https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople)
             CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
             if [[ "$CurrentWorkflowID" != "$OldWorkflowID" ]]
@@ -393,7 +395,7 @@ jobs:
               echo ${CIRCLE_WORKFLOW_ID:0:7} , ${OldWorkflowID:0:7}
               echo "deleting old version"
               
-              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws s3 rm "s3://udapeople-${OldWorkflowID:}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
             else
