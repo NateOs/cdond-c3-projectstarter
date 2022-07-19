@@ -366,7 +366,7 @@ jobs:
                     --no-paginate --output text)
 
             echo ${OldWorkflowID}
-            OldId = ${OldWorkflowID:10:7}
+            OldId=${OldWorkflowID:10:7}
             curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople -d "OldId"
 
             aws cloudformation deploy \
