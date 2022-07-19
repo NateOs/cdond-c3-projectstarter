@@ -367,7 +367,7 @@ jobs:
 
             echo ${OldWorkflowID}
             OldId=${OldWorkflowID:10:7}
-            curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople -d "OldId"
+            curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople -d '$OldId'
 
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
