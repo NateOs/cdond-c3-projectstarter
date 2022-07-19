@@ -373,7 +373,8 @@ jobs:
             --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
 
-            curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople -d "$OldWorkflowID:10:7"
+            OldId = ${OldWorkflowID:10:7}
+            curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople -d "$OldId"
       - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
@@ -387,12 +388,13 @@ jobs:
           name: Cleanup old stack(s) & s3
           command: |
             OldWorkflowID=$(curl --insecure https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople)
+
             CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
-            if [[ "$CurrentWorkflowID" != ${OldWorkflowID:0:7} ]]
+            if [[ "$CurrentWorkflowID" != "$OldWorkflowID" ]]
             then 
               echo current workflow id , old workflow id
-              echo ${CIRCLE_WORKFLOW_ID:0:7} , ${OldWorkflowID:0:7}
+              echo ${CIRCLE_WORKFLOW_ID:0:7} , ${OldWorkflowID}
               echo "deleting old version"
               
               aws s3 rm "s3://udapeople-${OldWorkflowID:0:7}" --recursive
@@ -401,10 +403,10 @@ jobs:
             else
               echo "this stack is current, no previous"
             fi
-      # - destroy-environment:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      # - revert-migrations:
-      #     id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - destroy-environment:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 workflows:
   default:
     jobs:
