@@ -389,13 +389,13 @@ jobs:
             OldWorkflowID=$(curl --insecure https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople)
             CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
-            if [[ "$CurrentWorkflowID" != "$OldWorkflowID" ]]
+            if [[ "$CurrentWorkflowID" != ${OldWorkflowID:0:7} ]]
             then 
               echo current workflow id , old workflow id
               echo ${CIRCLE_WORKFLOW_ID:0:7} , ${OldWorkflowID:0:7}
               echo "deleting old version"
               
-              aws s3 rm "s3://udapeople-${OldWorkflowID:}" --recursive
+              aws s3 rm "s3://udapeople-${OldWorkflowID:0:7}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
             else
