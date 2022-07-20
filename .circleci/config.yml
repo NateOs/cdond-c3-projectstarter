@@ -33,7 +33,7 @@ commands:
           when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=$(curl --insecure https://kvdb.io/GhU1pwEADcAsznLuaxsast/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            SUCCESS=$(curl --insecure https://kvdb.io/J4UdWQ7AziAs1AYF6xYjeN/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if(( $SUCCESS==1 )); 
             then
               cd ~/project/backend
@@ -224,10 +224,10 @@ jobs:
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
               echo "Migration completed successfully!"
-              curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'successful' 
+              curl -k https://kvdb.io/J4UdWQ7AziAs1AYF6xYjeN/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'successful' 
             else
               echo "Migration failed!"
-              curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'failed' 
+              curl -k https://kvdb.io/J4UdWQ7AziAs1AYF6xYjeN/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'failed' 
             return 1
             fi
       - destroy-environment:
@@ -367,7 +367,7 @@ jobs:
 
             echo ${OldWorkflowID}
             OldId=${OldWorkflowID:10:7}
-            curl -k https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople -d "${OldId}"
+            curl -k https://kvdb.io/J4UdWQ7AziAs1AYF6xYjeN/udapeople -d "${OldId}"
 
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
@@ -387,7 +387,7 @@ jobs:
       - run: 
           name: Cleanup old stack(s) & s3
           command: |
-            OldWorkflowID=$(curl --insecure https://kvdb.io/GhU1pwEADcAsznLuaxsast/udapeople)
+            OldWorkflowID=$(curl --insecure https://kvdb.io/J4UdWQ7AziAs1AYF6xYjeN/udapeople)
 
             CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
