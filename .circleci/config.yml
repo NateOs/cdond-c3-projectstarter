@@ -302,7 +302,7 @@ jobs:
             echo "Contents  of the inventory.txt file is ------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-            
+
             return 1
       - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
@@ -405,10 +405,10 @@ jobs:
             else
               echo "this stack is current, no previous"
             fi
-      - run: 
-          name: remove s3
-          command: |
-              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive  
+      # - run: 
+      #     name: remove s3
+      #     command: |
+      #         aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive  
       - destroy-environment:
           id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
